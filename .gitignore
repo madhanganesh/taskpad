@@ -1,2 +1,5 @@
 *.yaml
 taskpad
+gin-bin
+node_modules/
+.swp

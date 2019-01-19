@@ -1,0 +1,59 @@
+{
+  "name": "taskpad",
+  "version": "0.0.1",
+  "description": "app to enter your daily tasks and tag them",
+  "main": "index.js",
+  "watch": {
+    "test-e2e": {
+      "patterns": [
+        ".",
+        "api-spec"
+      ],
+      "extensions": "js, feature, go",
+      "quite": true
+    }
+  },
+  "scripts": {
+    "start": "gin --notifications --bin taskpad -a 8080 -i run *.go",
+    "pretest-e2e": "node scripts/clean-e2e-db.js",
+    "test-e2e": "cucumber-js api-spec/cucumber/features --require api-spec/cucumber/steps",
+    "watch": "npm-watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/madhanganesh/taskpad.git"
+  },
+  "keywords": [
+    "taskpad",
+    "golang",
+    "reactjs"
+  ],
+  "author": "madhanganesh@gmail.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/madhanganesh/taskpad/issues"
+  },
+  "homepage": "https://github.com/madhanganesh/taskpad#readme",
+  "devDependencies": {
+    "@types/assert": "^1.4.1",
+    "@types/axios": "^0.14.0",
+    "@types/cucumber": "^4.0.4",
+    "@types/expect": "^1.20.3",
+    "@types/mocha": "^5.2.5",
+    "@types/moment": "^2.13.0",
+    "@types/superagent": "^3.8.6",
+    "@types/supertest": "^2.0.7",
+    "assert": "^1.4.1",
+    "cucumber": "^5.1.0",
+    "expect": "^23.6.0",
+    "mocha": "^5.2.0",
+    "npm-watch": "^0.5.0",
+    "superagent": "^4.1.0",
+    "supertest": "^3.4.1"
+  },
+  "dependencies": {
+    "axios": "^0.18.0",
+    "moment": "^2.23.0",
+    "pg": "^7.8.0"
+  }
+}

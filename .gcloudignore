@@ -26,5 +26,10 @@
 
 db/*
 ui/*
-api-spec/*
+test/*
 taskpad
+gin-bin
+node_modules/
+.swp
+package.json
+package-lock.json

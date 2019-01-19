@@ -67,6 +67,25 @@ func (repo *TaskRepository) GetTasksByDateRange(userid string, from string, to s
 	return getTasksFromRows(rows)
 }
 
+// GetTaskByID method
+func (repo *TaskRepository) GetTaskByID(userid string, id int64) (models.Task, error) {
+	query := `
+    select id, userid, title, due, completed, effort, tags, notes
+    from tasks
+    where userid = $1 and id = $2
+  `
+	row := repo.db.QueryRow(query, userid, id)
+	var tags string
+	var task models.Task
+	err := row.Scan(&task.ID, &task.UserID, &task.Title, &task.Due, &task.Completed, &task.Effort, &tags, &task.Notes)
+	if err != nil {
+		return models.Task{}, err
+	}
+
+	task.Tags = strings.Split(tags, ";")
+	return task, nil
+}
+
 func getTasksFromRows(rows *sql.Rows) ([]models.Task, error) {
 	tasks := []models.Task{}
 	for rows.Next() {

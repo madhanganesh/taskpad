@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/madhanganesh/taskpad/api/models"
@@ -12,6 +13,8 @@ import (
 
 	"github.com/madhanganesh/taskpad/api/repositories"
 )
+
+var userid = "usr1"
 
 // TaskController struct
 type TaskController struct {
@@ -26,10 +29,14 @@ func (c *TaskController) Init(db *sql.DB) {
 
 // CreateTask method
 func (c *TaskController) CreateTask(ctx *gin.Context) {
-	userid := "usr1"
-
 	var task models.Task
 	ctx.BindJSON(&task)
+	if task.Title == "" {
+		ctx.JSON(400, gin.H{
+			"error": "title should not be empty",
+		})
+		return
+	}
 	task.UserID = userid
 	if task.Tags == nil {
 		task.Tags = []string{}
@@ -38,7 +45,7 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		task.Due = time.Now().UTC()
 	}
 
-	createTask, err := c.taskRepository.CreateTask(task)
+	createdTask, err := c.taskRepository.CreateTask(task)
 	if err != nil {
 		log.Printf("Error: %v\n", err)
 		ctx.JSON(400, gin.H{
@@ -48,14 +55,12 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 	}
 
 	ctx.JSON(201, gin.H{
-		"task": createTask,
+		"task": createdTask,
 	})
 }
 
 // GetTasks method
 func (c *TaskController) GetTasks(ctx *gin.Context) {
-	userid := "usr1"
-
 	tasks := []models.Task{}
 	var err error
 	query := ctx.Request.URL.Query()
@@ -83,5 +88,29 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"tasks": tasks,
+	})
+}
+
+// GetTaskByID method
+func (c *TaskController) GetTaskByID(ctx *gin.Context) {
+	idstr := ctx.Param("id")
+	id, err := strconv.ParseInt(idstr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	task, err := c.taskRepository.GetTaskByID(userid, id)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"task": task,
 	})
 }

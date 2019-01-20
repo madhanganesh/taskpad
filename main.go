@@ -46,6 +46,8 @@ func main() {
 	router.POST("/api/tasks", taskController.CreateTask)
 	router.GET("/api/tasks", taskController.GetTasks)
 	router.GET("/api/tasks/:id", taskController.GetTaskByID)
+	router.PUT("/api/tasks/:id", taskController.UpdateTaskForID)
+	router.DELETE("/api/tasks/:id", taskController.DeleteTaskForID)
 
 	port := os.Getenv("PORT")
 	if port == "" {

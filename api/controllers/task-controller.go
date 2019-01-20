@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 	"time"
@@ -97,7 +98,7 @@ func (c *TaskController) GetTaskByID(ctx *gin.Context) {
 	id, err := strconv.ParseInt(idstr, 10, 64)
 	if err != nil {
 		ctx.JSON(400, gin.H{
-			"message": err.Error(),
+			"message": fmt.Sprintf("%s is not a valid number", idstr),
 		})
 		return
 	}
@@ -112,5 +113,62 @@ func (c *TaskController) GetTaskByID(ctx *gin.Context) {
 
 	ctx.JSON(200, gin.H{
 		"task": task,
+	})
+}
+
+// UpdateTaskForID method
+func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
+	idstr := ctx.Param("id")
+	id, err := strconv.ParseInt(idstr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": fmt.Sprintf("%s is not a valid number", idstr),
+		})
+		return
+	}
+
+	existingTask, err := c.taskRepository.GetTaskByID(userid, id)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.BindJSON(&existingTask)
+	err = c.taskRepository.UpdateTask(userid, id, existingTask)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"message": fmt.Sprintf("%d updated", id),
+	})
+}
+
+// DeleteTaskForID method
+func (c *TaskController) DeleteTaskForID(ctx *gin.Context) {
+	idstr := ctx.Param("id")
+	id, err := strconv.ParseInt(idstr, 10, 64)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"message": fmt.Sprintf("%s is not a valid number", idstr),
+		})
+		return
+	}
+
+	err = c.taskRepository.DeleteTask(userid, id)
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(200, gin.H{
+		"message": fmt.Sprintf("%d deleted", id),
 	})
 }

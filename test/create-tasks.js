@@ -29,7 +29,7 @@ describe('create tasks', () => {
         done();
       })
       .catch(err => {
-        done(err);
+        done(err.response.error);
       });
   });
 
@@ -47,6 +47,43 @@ describe('create tasks', () => {
           'title should not be empty'
         );
         done();
+      });
+  });
+
+  it('should create task with tags', done => {
+    const task = makeTestTasks()[0];
+    request
+      .post(TASKS_ENDPOINT)
+      .send(task)
+      .set('Content-Type', 'application/json')
+      .then(async res => {
+        expect(res.status).toBe(201);
+        expect(res.body.task.id).toBeDefined();
+        const rtask = await retrieveTaskById(res.body.task.id);
+        expect(rtask !== null).toBeTruthy();
+        done();
+      })
+      .catch(err => {
+        done(err.response.error);
+      });
+  });
+
+  it('should create task with no tags', done => {
+    const task = makeTestTasks()[0];
+    task.tags = [];
+    request
+      .post(TASKS_ENDPOINT)
+      .send(task)
+      .set('Content-Type', 'application/json')
+      .then(async res => {
+        expect(res.status).toBe(201);
+        expect(res.body.task.id).toBeDefined();
+        const rtask = await retrieveTaskById(res.body.task.id);
+        expect(rtask !== null).toBeTruthy();
+        done();
+      })
+      .catch(err => {
+        done(err.response.error);
       });
   });
 });

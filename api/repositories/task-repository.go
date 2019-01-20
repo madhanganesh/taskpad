@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/madhanganesh/taskpad/api/models"
@@ -82,8 +83,55 @@ func (repo *TaskRepository) GetTaskByID(userid string, id int64) (models.Task, e
 		return models.Task{}, err
 	}
 
-	task.Tags = strings.Split(tags, ";")
+	task.Tags = []string{}
+	if len(tags) > 0 {
+		task.Tags = strings.Split(tags, ";")
+	}
 	return task, nil
+}
+
+// UpdateTask method
+func (repo *TaskRepository) UpdateTask(userid string, id int64, task models.Task) error {
+	query := `
+    update tasks
+    set title=$3, due=$4, completed=$5, effort=$6, tags=$7, notes=$8
+    where userid=$1 and id=$2
+  `
+
+	tags := strings.Join(task.Tags, ";")
+	res, err := repo.db.Exec(query, userid, id, task.Title, task.Due, task.Completed, task.Effort, tags, task.Notes)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count != 1 {
+		return fmt.Errorf("more than 1 record got updated for %d", id)
+	}
+
+	return nil
+}
+
+// DeleteTask method
+func (repo *TaskRepository) DeleteTask(userid string, id int64) error {
+	query := `delete from tasks where userid=$1 and id=$2`
+	res, err := repo.db.Exec(query, userid, id)
+	if err != nil {
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		return err
+	}
+	if count != 1 {
+		return fmt.Errorf("exactly 1 row is not impacted for %d", id)
+	}
+
+	return nil
 }
 
 func getTasksFromRows(rows *sql.Rows) ([]models.Task, error) {
@@ -96,7 +144,10 @@ func getTasksFromRows(rows *sql.Rows) ([]models.Task, error) {
 			return nil, err
 		}
 
-		task.Tags = strings.Split(tags, ";")
+		task.Tags = []string{}
+		if len(tags) > 0 {
+			task.Tags = strings.Split(tags, ";")
+		}
 		tasks = append(tasks, task)
 	}
 

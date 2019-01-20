@@ -26,11 +26,10 @@ const makeTestTasks = (start = 0, end = 1) => {
     const date = moment().add(i, 'days');
 
     tasks.push({
-      userid: 'testuser',
       title: `task - ${index++}`,
       completed: i % 2 === 0,
       due: date.utc().toISOString(),
-      tags: [],
+      tags: ['tag-1'],
       effort: Math.floor(Math.random() * 5) + 0.5
     });
   }
@@ -49,7 +48,7 @@ async function retrieveTaskById(id) {
   }
 }
 
-async function createTestTasksInDB(tasks) {
+async function cleanAndCreateTestTasksInDB(tasks) {
   await cleanTasksTable();
   for (let i = 0; i < tasks.length; i++) {
     const task = tasks[i];
@@ -58,6 +57,7 @@ async function createTestTasksInDB(tasks) {
         'content-type': 'application/json'
       }
     });
+    tasks[i] = res.data.task;
   }
 }
 
@@ -111,7 +111,7 @@ module.exports = {
   cleanTasksTable,
   makeTestTasks,
   retrieveTaskById,
-  createTestTasksInDB,
+  cleanAndCreateTestTasksInDB,
   getEndpoingForDateQuery,
   getWeekStartAndEnd,
   isSameDate,

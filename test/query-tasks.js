@@ -5,36 +5,20 @@ const request = require('superagent');
 const {
   TASKS_ENDPOINT,
   makeTestTasks,
-  createTestTasksInDB,
+  cleanAndCreateTestTasksInDB,
   getEndpoingForDateQuery,
   getWeekStartAndEnd,
   isSameDate
 } = require('./utils');
 
-let testTasks = [];
+describe('query tests', () => {
+  let testTasks = [];
 
-beforeEach(async () => {
-  testTasks = makeTestTasks(-10, 10);
-  await createTestTasksInDB(testTasks);
-});
+  beforeEach(async () => {
+    testTasks = makeTestTasks(-10, 10);
+    await cleanAndCreateTestTasksInDB(testTasks);
+  });
 
-const testForFilter = (endpoint, getFilter, done) => {
-  const expectedTaskTitles = testTasks
-    .filter(t => getFilter(t))
-    .map(t => t.title);
-  request
-    .get(endpoint)
-    .then(res => {
-      const actualTaskTitles = res.body.tasks.map(t => t.title);
-      expect(actualTaskTitles).toEqual(expectedTaskTitles);
-      done();
-    })
-    .catch(err => {
-      done(err);
-    });
-};
-
-describe('tasks query by status', () => {
   it('should get pending tasks', done => {
     const getFilter = task => {
       return !task.completed;
@@ -42,9 +26,7 @@ describe('tasks query by status', () => {
     const endpoint = `${TASKS_ENDPOINT}?pending=true`;
     testForFilter(endpoint, getFilter, done);
   });
-});
 
-describe('tasks query by dates', () => {
   it('should get today tasks', done => {
     const daysToAdjust = 0;
 
@@ -116,4 +98,20 @@ describe('tasks query by dates', () => {
     };
     testForFilter(endpoint, getFilter, done);
   });
+
+  const testForFilter = (endpoint, getFilter, done) => {
+    const expectedTaskTitles = testTasks
+      .filter(t => getFilter(t))
+      .map(t => t.title);
+    request
+      .get(endpoint)
+      .then(res => {
+        const actualTaskTitles = res.body.tasks.map(t => t.title);
+        expect(actualTaskTitles).toEqual(expectedTaskTitles);
+        done();
+      })
+      .catch(err => {
+        done(err.response.error);
+      });
+  };
 });

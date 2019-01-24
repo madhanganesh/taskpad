@@ -9,6 +9,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/madhanganesh/taskpad/api/controllers"
+	"github.com/madhanganesh/taskpad/api/middlewares"
 	"github.com/madhanganesh/taskpad/api/util"
 )
 
@@ -43,11 +44,31 @@ func main() {
 		}
 	})
 
-	router.POST("/api/tasks", taskController.CreateTask)
-	router.GET("/api/tasks", taskController.GetTasks)
-	router.GET("/api/tasks/:id", taskController.GetTaskByID)
-	router.PUT("/api/tasks/:id", taskController.UpdateTaskForID)
-	router.DELETE("/api/tasks/:id", taskController.DeleteTaskForID)
+	//router.Use(static.Serve("/", static.LocalFile("./ui-dist", true)))
+
+	auth0Domain := os.Getenv("AUTH0_DOMAIN")
+	auth0ClientID := os.Getenv("AUTH0_CLIENT_ID")
+	auth0Audience := os.Getenv("AUTH0_AUDIENCE")
+
+	if auth0Domain == "" || auth0ClientID == "" || auth0Audience == "" {
+		log.Panic("AUTH0 details not found in environment variables")
+	}
+
+	router.LoadHTMLGlob("ui-dist/*.html")
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "index.html", gin.H{
+			"AUTH0_DOMAIN":    auth0Domain,
+			"AUTH0_CLIENT_ID": auth0ClientID,
+			"AUTH0_AUDIENCE":  auth0Audience,
+		})
+	})
+	router.Static("/static", "./ui-dist/static")
+
+	router.POST("/api/tasks", middlewares.AuthMiddleware(), taskController.CreateTask)
+	router.GET("/api/tasks", middlewares.AuthMiddleware(), taskController.GetTasks)
+	router.GET("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.GetTaskByID)
+	router.PUT("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.UpdateTaskForID)
+	router.DELETE("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.DeleteTaskForID)
 
 	port := os.Getenv("PORT")
 	if port == "" {

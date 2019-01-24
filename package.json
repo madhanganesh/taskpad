@@ -14,10 +14,10 @@
     }
   },
   "scripts": {
-    "start": "gin --notifications --bin taskpad -a 8080 -i run *.go",
-    "pretest-e2e": "node scripts/clean-e2e-db.js",
-    "test-e2e": "cucumber-js api-spec/cucumber/features --require api-spec/cucumber/steps",
-    "watch": "npm-watch"
+    "start": "POSTGRES_CONNECTION_STRING='user=madhanganesh dbname=taskpad sslmode=disable' AUTH0_DOMAIN=minisoft-dev.auth0.com AUTH0_AUDIENCE=taspad-dev-api-aud AUTH0_CLIENT_ID=v3QVttyon9pAEQNRMlcSChKN9xQOLmMx gin --notifications --bin taskpad -a 8080 -i run *.go",
+    "test:e2e": "mocha --no-timeouts",
+    "watch": "npm-watch",
+    "deploy": "gcloud app deploy"
   },
   "repository": {
     "type": "git",

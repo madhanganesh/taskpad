@@ -2,10 +2,9 @@ import React, { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
 
 import Home from './Home';
-import Profile from './Profile';
 import Nav from './Nav';
 import Auth from './auth/Auth';
-import Callback from './Callback';
+import TasksPage from './tasks/TasksPage';
 
 class App extends Component {
   constructor(props) {
@@ -14,7 +13,6 @@ class App extends Component {
   }
 
   componentDidMount() {
-    //alert(window.location.hash);
     if (window.location.hash.indexOf('access_token') !== -1) {
       this.auth.handleAuthentication();
     }
@@ -22,7 +20,7 @@ class App extends Component {
 
   render() {
     return (
-      <>
+      <div className="container">
         <Nav auth={this.auth} />
         <div className="body">
           <Route
@@ -31,21 +29,17 @@ class App extends Component {
             render={props => <Home auth={this.auth} {...props} />}
           />
           <Route
-            path="/callback"
-            render={props => <Callback auth={this.auth} {...props} />}
-          />
-          <Route
-            path="/profile"
+            path="/tasks"
             render={props =>
               this.auth.isAuthenticated() ? (
-                <Profile auth={this.auth} {...props} />
+                <TasksPage auth={this.auth} {...props} />
               ) : (
                 <Redirect to="/" />
               )
             }
           />
         </div>
-      </>
+      </div>
     );
   }
 }

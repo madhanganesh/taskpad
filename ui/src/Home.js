@@ -2,18 +2,25 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 
 class Home extends Component {
+  componentDidMount() {
+    if (this.props.auth.isAuthenticated()) {
+      this.props.history.push('/tasks');
+    }
+  }
+
   render() {
     const { isAuthenticated, login } = this.props.auth;
 
     return (
-      <div>
-        <h1>Home</h1>
-        {isAuthenticated() ? (
-          <Link to="/profile">View Profile</Link>
-        ) : (
-          <button onClick={login}>Log In</button>
-        )}
-      </div>
+      <main className="flex">
+        <div className="column-main tile">
+          <h1>what gets measured gets improved</h1>
+          <p>
+            Simple taskpad app that lets you add tasks and tag them. Provide you
+            with a dashboard to see where you have been spending your time!
+          </p>
+        </div>
+      </main>
     );
   }
 }

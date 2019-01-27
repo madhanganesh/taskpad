@@ -32,7 +32,7 @@ class Auth {
     this.auth0.parseHash((err, authResult) => {
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        this.history.push('/');
+        this.history.push('/tasks');
       } else if (err) {
         this.history.push('/');
         alert(`Error: ${err.error}. Check the console for further details.`);

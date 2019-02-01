@@ -13,9 +13,9 @@ body {
   font-family: Raleway, Helvetica, Arial, sans-serif;
 }
 
-body * + * {
+/*body * + * {
   margin-top: 1.5em;
-}
+}*/
 
 .container {
   max-width: 1080px;
@@ -52,7 +52,7 @@ body * + * {
 }
 
 .tile {
-  padding: 1.5em;
+  padding: 0.5em;
   background-color: white;
 }
 
@@ -65,8 +65,13 @@ body * + * {
   margin-left: 1.5em;
 }
 
+.taskpage {
+  align-items: flex-start;
+}
+
 .column-main {
   flex: 2;
+  padding-left: 0.5em;
 }
 
 .column-sidebar {
@@ -79,7 +84,7 @@ body * + * {
   flex: 1;
 }
 
-.login-form h3 {
+.task-form h3 {
   margin: 0;
   font-size: 0.9em;
   font-weight: bold;
@@ -87,16 +92,146 @@ body * + * {
   text-transform: uppercase;
 }
 
-.login-form input:not([type='checkbox']):not([type='radio']) {
+.task-form input:not([type='checkbox']):not([type='radio']) {
   display: block;
   width: 100%;
   margin-top: 0;
 }
 
-.login-form button {
+.task-detail-due {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+}
+
+.task-form button {
+  margin-top: 1em;
+  border: 1px solid #cc6b5a;
+  background-color: white;
+  padding: 0.4em 1em;
+  cursor: pointer;
+  font-size: 0.75em;
+}
+
+.task-form > button + button {
+  margin-left: 1em;
+}
+
+.task-form * {
+  font-family: inherit;
+  font-size: 1em;
+}
+
+.tasksarea {
+  flex-direction: column;
+}
+
+.toolbar {
+  background-color1: lightgrey;
+  padding: 0.5em;
+  flex-direction: row-reverse;
+}
+
+/*.toolbar > button {
+  padding: 0.5em 1.5em;
+  background-color: #cc6b5a;
+  text-align: center;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  cursor: pointer;
+}*/
+
+.toolbar > button1 {
+  display: block;
+  padding: 0.5em 1em;
+  background-color: #cc6b5a;
+  color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+}
+
+.toolbar > button,
+select {
+  display: block;
+  padding: 0.4em 1em;
+  /*background-color: #cc6b5a;
+  color: white;*/
+  border: 1px solid #cc6b5a;
+  background-color: white;
+  text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 0.75em;
+  margin-left: 1em;
+  border-radius: 0.25em;
+}
+
+.toobar-loader {
+  display: block;
+  padding1: 0.4em 1em;
+  margin-right: auto;
+}
+
+.toolbar1 > * {
   margin-top: 1em;
   border: 1px solid #cc6b5a;
   background-color: white;
   padding: 0.5em 1em;
   cursor: pointer;
+}
+
+.toolbar > * + * {
+  margin-left: 1.5em;
+}
+
+ul.tasks {
+  list-style: none;
+  padding: 0 0;
+  margin-left: 0;
+}
+
+.task {
+  cursor: pointer;
+  align-items: center;
+  margin-left: 0;
+  border-bottom: #f5f5f5 solid 1px;
+  margin-top: 1.5em;
+}
+
+.task-dirty {
+  cursor: auto;
+  color: gray;
+}
+
+/*body * + * {
+  margin-top: 1.5em;
+}*/
+
+.task > .task-right {
+  margin-left: auto;
+  font-size: 0.8em;
+  padding: 0.2em 1.5em;
+  background: #e8e8e8;
+  border-radius: 0.5em;
+}
+
+.task-title {
+  margin-left: 0.25em;
+}
+
+input[type='checkbox'] {
+  zoom: 1.5;
+  cursor: pointer;
+}
+
+.react-datepicker-wrapper,
+.react-datepicker__input-container,
+.tasknotes {
+  display: block;
+  width: 100%;
+  margin-left: 0;
+  margin-top: 0;
 }

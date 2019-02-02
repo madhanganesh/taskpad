@@ -35,6 +35,11 @@ class TaskDetail extends Component {
     this.props.onDeleteTask(this.state.task);
   };
 
+  onCancelEditTask = event => {
+    event.preventDefault();
+    this.props.onCancelEditTask();
+  };
+
   onDueDateChange = date => {
     this.setState({
       task: { ...this.state.task, due: date }
@@ -67,7 +72,6 @@ class TaskDetail extends Component {
   };
 
   render() {
-    const { onCancelEditTask } = this.props;
     const { id, title, due, effort, tags, notes } = this.state.task;
 
     const tagsSelectDefaultValues = tags.map(t => ({ value: t, label: t }));
@@ -194,7 +198,7 @@ class TaskDetail extends Component {
           {id !== undefined ? (
             <button onClick={this.onDeleteTask}>Delete</button>
           ) : null}
-          <button onClick={onCancelEditTask}>Cancel</button>
+          <button onClick={this.onCancelEditTask}>Cancel</button>
         </form>
       </div>
     );

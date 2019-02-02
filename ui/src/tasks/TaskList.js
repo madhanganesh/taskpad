@@ -11,18 +11,25 @@ class TaskList extends Component {
     }
   };
 
+  onToggleDone = task => {
+    const toggledTask = { ...task, completed: !task.completed };
+    this.props.onSaveTask(toggledTask);
+  };
+
   renderTasks() {
     return this.props.tasks.map((task, index) => {
       const dateStr = moment(task.due).format('Do MMM');
       const className = task.dirty ? 'flex task task-dirty' : 'flex task';
       return (
-        <li
-          key={index}
-          className={className}
-          onClick={() => this.onEditTask(task)}
-        >
-          <input type="checkbox" />
-          <span className="task-title">{task.title}</span>
+        <li key={index} className={className}>
+          <input
+            type="checkbox"
+            checked={task.completed}
+            onChange={() => this.onToggleDone(task)}
+          />
+          <span className="task-title" onClick={() => this.onEditTask(task)}>
+            {task.title}
+          </span>
           <span className="sweet-loading toobar-loader">
             <BarLoader
               sizeUnit={'px'}
@@ -40,6 +47,7 @@ class TaskList extends Component {
 
   render() {
     const {
+      tasks,
       loading,
       filter,
       onTaskFilterChange,
@@ -53,6 +61,7 @@ class TaskList extends Component {
           <Toolbar
             loading={loading}
             filter={filter}
+            count={tasks.length}
             onTaskFilterChange={onTaskFilterChange}
             onAddTask={onAddTask}
             onReload={onReload}

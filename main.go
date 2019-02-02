@@ -44,31 +44,37 @@ func main() {
 		}
 	})
 
-	//router.Use(static.Serve("/", static.LocalFile("./ui-dist", true)))
-
 	auth0Domain := os.Getenv("AUTH0_DOMAIN")
 	auth0ClientID := os.Getenv("AUTH0_CLIENT_ID")
 	auth0Audience := os.Getenv("AUTH0_AUDIENCE")
+	auth0Callback := os.Getenv("AUTH0_CALLBACK")
 
-	if auth0Domain == "" || auth0ClientID == "" || auth0Audience == "" {
+	if auth0Domain == "" || auth0ClientID == "" || auth0Audience == "" || auth0Callback == "" {
 		log.Panic("AUTH0 details not found in environment variables")
 	}
 
+	dataToUIPage := gin.H{
+		"AUTH0_DOMAIN":    auth0Domain,
+		"AUTH0_CLIENT_ID": auth0ClientID,
+		"AUTH0_AUDIENCE":  auth0Audience,
+		"AUTH0_CALLBACK":  auth0Callback,
+	}
+
 	router.LoadHTMLGlob("ui-dist/*.html")
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.HTML(http.StatusOK, "index.html", gin.H{
-			"AUTH0_DOMAIN":    auth0Domain,
-			"AUTH0_CLIENT_ID": auth0ClientID,
-			"AUTH0_AUDIENCE":  auth0Audience,
-		})
-	})
 	router.Static("/static", "./ui-dist/static")
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "index.html", dataToUIPage)
+	})
 
 	router.POST("/api/tasks", middlewares.AuthMiddleware(), taskController.CreateTask)
 	router.GET("/api/tasks", middlewares.AuthMiddleware(), taskController.GetTasks)
 	router.GET("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.GetTaskByID)
 	router.PUT("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.UpdateTaskForID)
 	router.DELETE("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.DeleteTaskForID)
+
+	router.NoRoute(func(ctx *gin.Context) {
+		ctx.HTML(http.StatusOK, "index.html", dataToUIPage)
+	})
 
 	port := os.Getenv("PORT")
 	if port == "" {

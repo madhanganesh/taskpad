@@ -11,7 +11,7 @@ const makeTestTasks = (start = 0, end = 1) => {
       id: i,
       userid: 'dev-test-user',
       title: `task - ${index++}`,
-      completed: false, //i % 2 === 0,
+      completed: i % 2 === 0,
       due: date.utc().toISOString(),
       tags: ['tag-1'],
       effort: Math.floor(Math.random() * 5) + 0.5,
@@ -22,7 +22,7 @@ const makeTestTasks = (start = 0, end = 1) => {
   return tasks;
 };
 
-//let tasks = makeTestTasks(-7, 7);
-let tasks = makeTestTasks(0, 1);
+let tasks = makeTestTasks(-7, 7);
+//let tasks = makeTestTasks(0, 1);
 
 module.exports = tasks;

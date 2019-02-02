@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 
 class Home extends Component {
   componentDidMount() {
@@ -9,8 +8,6 @@ class Home extends Component {
   }
 
   render() {
-    const { isAuthenticated, login } = this.props.auth;
-
     return (
       <main className="flex">
         <div className="column-main tile">

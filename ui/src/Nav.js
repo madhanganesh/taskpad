@@ -1,8 +1,33 @@
-// eslint-ignore jsx-a11y/anchor-is-valid
+/* eslint-disable */
+
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import moment from 'moment';
 
 class Nav extends Component {
+  state = {
+    username: ''
+  };
+
+  componentDidMount() {
+    this.setUserName();
+  }
+
+  componentDidUpdate() {
+    this.setUserName();
+  }
+
+  setUserName = () => {
+    if (this.state.username !== '') return;
+
+    if (this.props.auth.isAuthenticated()) {
+      this.props.auth.getProfile(profile => {
+        this.setState({
+          username: profile.given_name || profile.nickname || profile.email
+        });
+      });
+    }
+  };
+
   render() {
     const { isAuthenticated, login, logout } = this.props.auth;
 
@@ -19,8 +44,10 @@ class Nav extends Component {
             <li>
               <a href="/pricing">Reports</a>
             </li>
-            <li className="nav-right">
-              {this.props.auth.isAuthenticated() ? (
+            <li className="nav-date">{moment().format('DD MMM YYYY')}</li>
+            <li className="nav-username">{this.state.username}</li>
+            <li style={{ marginLeft: '0.5em' }}>
+              {isAuthenticated() ? (
                 <a href="#" onClick={logout}>
                   Logout
                 </a>

@@ -166,6 +166,7 @@ class TasksPage extends Component {
           onEditTask={this.onEditTask}
           onTaskFilterChange={this.onTaskFilterChange}
           onReload={this.onReload}
+          onSaveTask={this.onSaveTask}
         />
 
         {this.state.editTask ? this.renderTaskDetail() : this.renderMetrics()}

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	jwtmiddleware "github.com/auth0/go-jwt-middleware"
 	jwt "github.com/dgrijalva/jwt-go"
@@ -34,7 +35,6 @@ func init() {
 		ValidationKeyGetter: validationKeyGetter,
 		SigningMethod:       jwt.SigningMethodRS256,
 	})
-
 }
 
 func validationKeyGetter(token *jwt.Token) (interface{}, error) {
@@ -88,7 +88,8 @@ func getPemCert(token *jwt.Token) (string, error) {
 	return cert, nil
 }
 
-// AuthMiddleware function
+// AuthMiddleware function based on
+// https://auth0.com/docs/quickstart/backend/golang
 func AuthMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		err := jwtMiddleWare.CheckJWT(ctx.Writer, ctx.Request)
@@ -99,5 +100,21 @@ func AuthMiddleware() gin.HandlerFunc {
 			ctx.Writer.Write([]byte("Unauthorized"))
 			return
 		}
+
+		authToken := ctx.Request.Header["Authorization"][0]
+		splitToken := strings.Split(authToken, "Bearer ")
+		authToken = splitToken[1]
+		parsedToken, _ := jwt.ParseWithClaims(authToken, &jwt.StandardClaims{}, nil)
+		if err != nil {
+			log.Printf("error parsing token: %v\n", err)
+			ctx.Abort()
+			ctx.Writer.WriteHeader(http.StatusUnauthorized)
+			ctx.Writer.Write([]byte("Unauthorized"))
+			return
+		}
+		tokenData := parsedToken.Claims.(*jwt.StandardClaims)
+
+		log.Printf("claims retrieved %+v\n", tokenData)
+		ctx.Set("userid", tokenData.Subject)
 	}
 }

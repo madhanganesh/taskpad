@@ -3,10 +3,12 @@ import auth0 from 'auth0-js';
 let AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN;
 let AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID;
 let AUTH0_AUDIENCE = process.env.REACT_APP_AUTH0_AUDIENCE;
+let AUTH0_CALLBACK = process.env.REACT_APP_AUTH0_CALLBACK_URL;
 if (process.env.NODE_ENV !== 'development') {
   AUTH0_DOMAIN = window.AUTH0_DOMAIN;
   AUTH0_CLIENT_ID = window.AUTH0_CLIENT_ID;
   AUTH0_AUDIENCE = window.AUTH0_AUDIENCE;
+  AUTH0_CALLBACK = window.AUTH0_CALLBACK;
 }
 
 class Auth {
@@ -17,8 +19,7 @@ class Auth {
       domain: AUTH0_DOMAIN,
       clientID: AUTH0_CLIENT_ID,
       audience: AUTH0_AUDIENCE,
-      //process.env.REACT_APP_AUTH0_CALLBACK_URL,
-      callbackUrl: location.href, // eslint-disable-line
+      redirectUri: AUTH0_CALLBACK,
       responseType: 'token id_token',
       scope: 'openid profile email'
     });
@@ -62,7 +63,7 @@ class Auth {
     this.userProfile = null;
     this.auth0.logout({
       clientID: AUTH0_CLIENT_ID,
-      returnTo: location.href //eslint-disable-line
+      returnTo: AUTH0_CALLBACK
     });
   };
 

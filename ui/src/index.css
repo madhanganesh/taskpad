@@ -47,8 +47,17 @@ body {
   margin-left: 1.5em;
 }
 
-.site-nav > .nav-right {
+.site-nav > .nav-username {
+  padding: 0.5em 0.5em;
+  color: white;
+  margin-left: 0;
+}
+
+.site-nav > .nav-date {
   margin-left: auto;
+  margin-right: 0;
+  padding: 0.5em 0.5em;
+  color: white;
 }
 
 .tile {
@@ -127,7 +136,6 @@ body {
 }
 
 .toolbar {
-  background-color1: lightgrey;
   padding: 0.5em;
   flex-direction: row-reverse;
 }
@@ -169,10 +177,20 @@ select {
   border-radius: 0.25em;
 }
 
-.toobar-loader {
+.toolbar > select {
+  margin-left: 0;
+}
+
+.toolbar > .loader {
   display: block;
-  padding1: 0.4em 1em;
+  margin-top: 0.7em;
   margin-right: auto;
+}
+
+.toolbar > .count {
+  display: block;
+  padding: 0.4em 1em;
+  text-decoration: none;
 }
 
 .toolbar1 > * {
@@ -194,7 +212,6 @@ ul.tasks {
 }
 
 .task {
-  cursor: pointer;
   align-items: center;
   margin-left: 0;
   border-bottom: #f5f5f5 solid 1px;
@@ -220,6 +237,7 @@ ul.tasks {
 
 .task-title {
   margin-left: 0.25em;
+  cursor: pointer;
 }
 
 input[type='checkbox'] {

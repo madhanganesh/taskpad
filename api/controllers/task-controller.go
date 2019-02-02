@@ -15,7 +15,7 @@ import (
 	"github.com/madhanganesh/taskpad/api/repositories"
 )
 
-var userid = "usr1"
+//var userid = "usr1"
 
 // TaskController struct
 type TaskController struct {
@@ -38,7 +38,14 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		})
 		return
 	}
-	task.UserID = userid
+	userid, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	task.UserID = userid.(string)
 	if task.Tags == nil {
 		task.Tags = []string{}
 	}
@@ -68,6 +75,16 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 	pendings := query["pending"]
 	froms := query["from"]
 	tos := query["to"]
+
+	useridi, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	userid := useridi.(string)
+
 	if len(pendings) > 0 {
 		log.Printf("invoking GetPendingTasks for user %s\n", userid)
 		tasks, err = c.taskRepository.GetPendingTasks(userid)
@@ -103,6 +120,15 @@ func (c *TaskController) GetTaskByID(ctx *gin.Context) {
 		return
 	}
 
+	useridi, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	userid := useridi.(string)
+
 	task, err := c.taskRepository.GetTaskByID(userid, id)
 	if err != nil {
 		ctx.JSON(400, gin.H{
@@ -126,6 +152,15 @@ func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
 		})
 		return
 	}
+
+	useridi, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	userid := useridi.(string)
 
 	existingTask, err := c.taskRepository.GetTaskByID(userid, id)
 	if err != nil {
@@ -159,6 +194,15 @@ func (c *TaskController) DeleteTaskForID(ctx *gin.Context) {
 		})
 		return
 	}
+
+	useridi, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	userid := useridi.(string)
 
 	err = c.taskRepository.DeleteTask(userid, id)
 	if err != nil {

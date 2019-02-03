@@ -1,57 +1,60 @@
 import React, { Component } from 'react';
-import axios from 'axios';
 import moment from 'moment';
 
 import TaskList from './TaskList';
 import TaskDetail from './TaskDetail';
 import { getQueryParamsForFilter } from '../utils/utils';
+import httpApi from '../utils/http-api';
+import notifier from '../utils/notifier';
 
 class TasksPage extends Component {
   state = {
     tasks: [],
+    usertags: [],
     editTask: null,
     filter: 'pending',
     loading: false
   };
 
   async componentDidMount() {
-    this.loadTasksWithIndicator();
+    this.loadTasks();
   }
 
-  async loadTasksWithIndicator() {
-    this.setState({
-      loading: true
-    });
-    await this.loadTasks();
+  loadTasks = async (showLoadingIndicator = true) => {
+    if (showLoadingIndicator) {
+      this.setState({
+        loading: true
+      });
+    }
+
+    const filter = getQueryParamsForFilter(this.state.filter);
+    const url = `/api/tasks?${filter}`;
+    const data = await httpApi.getWithErrorHandled(url);
     this.setState({
       loading: false
     });
-  }
 
-  async loadTasks() {
-    const filter = getQueryParamsForFilter(this.state.filter);
-    const result = await axios.get(`/api/tasks?${filter}`, {
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${this.props.auth.getAccessToken()}`
-      }
-    });
-    this.setState({
-      tasks: result.data.tasks.map(t => ({ ...t, dirty: false }))
-    });
-  }
-
-  onTaskFilterChange = event => {
-    this.setState(
-      {
-        filter: event.target.value
-      },
-      () => this.loadTasksWithIndicator()
-    );
+    if (data) {
+      this.setState({
+        tasks: data.tasks.map(t => ({ ...t, dirty: false, error: undefined }))
+      });
+    }
   };
 
-  onReload = () => {
-    this.loadTasksWithIndicator();
+  loadUserTags = async () => {
+    const url = `/api/usertags`;
+    const warning = 'Error while retrieving your tags';
+    const data = await httpApi.getWithWarningHandled(url, warning);
+    if (data) {
+      this.setState({
+        usertags: data.tags
+      });
+    }
+  };
+
+  onTaskFilterChange = event => {
+    const state = { filter: event.target.value };
+    this.setState(state, () => this.loadTasks());
   };
 
   onAddTask = () => {
@@ -61,72 +64,39 @@ class TasksPage extends Component {
         due: moment().toISOString(),
         completed: false,
         effort: 1,
-        tags: ['architecture', 'meeting'],
+        tags: [],
         notes: ''
       }
     });
+    this.loadUserTags();
   };
 
   onEditTask = task => {
     this.setState({
       editTask: task
     });
+    this.loadUserTags();
   };
 
-  onSaveTask = async task => {
+  onSaveTask = async (task, cud) => {
+    const { tasks } = this.state;
+    const dirtyTask = { ...task, dirty: true, error: undefined, cud: cud };
+    const updatedTasks = this._getUpdatedTasks(tasks, dirtyTask, cud);
+
     this.setState({
-      editTask: null
+      editTask: null,
+      tasks: updatedTasks
     });
 
-    const dirtyTask = { ...task, dirty: true };
-    if (dirtyTask.id !== undefined) {
-      const newTasks = this.state.tasks.map(t => {
-        return t.id !== dirtyTask.id ? t : dirtyTask;
-      });
-
-      this.setState({
-        tasks: newTasks
-      });
-      await axios.put(`/api/tasks/${task.id}`, task, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${this.props.auth.getAccessToken()}`
-        }
-      });
-
-      this.loadTasks();
-    } else {
-      this.setState({
-        tasks: [...this.state.tasks, dirtyTask]
-      });
-      await axios.post(`/api/tasks`, dirtyTask, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${this.props.auth.getAccessToken()}`
-        }
-      });
-
-      this.loadTasks();
+    const err = await this._doCud(dirtyTask, cud);
+    if (err) {
+      notifier.showError(`Error is ${cud} operation. Please retry`);
+      dirtyTask.error = `Error is ${cud} operation. Please click here to retry`;
+      this.forceUpdate();
+      return;
     }
-  };
 
-  onDeleteTask = async task => {
-    this.setState({
-      editTask: null
-    });
-
-    if (task.id !== undefined) {
-      const dirtyTask = { ...task, dirty: true };
-      this.setState({
-        tasks: this.state.tasks.filter(t => t.id !== dirtyTask.id)
-      });
-      await axios.delete(`/api/tasks/${dirtyTask.id}`, {
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${this.props.auth.getAccessToken()}`
-        }
-      });
-    }
+    this.loadTasks(false);
   };
 
   onCancelEditTask = () => {
@@ -147,6 +117,7 @@ class TasksPage extends Component {
     return (
       <TaskDetail
         task={this.state.editTask}
+        usertags={this.state.usertags}
         onSaveTask={this.onSaveTask}
         onDeleteTask={this.onDeleteTask}
         onCancelEditTask={this.onCancelEditTask}
@@ -165,7 +136,7 @@ class TasksPage extends Component {
           onAddTask={this.onAddTask}
           onEditTask={this.onEditTask}
           onTaskFilterChange={this.onTaskFilterChange}
-          onReload={this.onReload}
+          onReload={this.loadTasks}
           onSaveTask={this.onSaveTask}
         />
 
@@ -173,6 +144,40 @@ class TasksPage extends Component {
       </main>
     );
   }
+
+  // perform Create, Updae or Delete
+  _doCud = async (task, cud) => {
+    if (cud === 'create') {
+      return httpApi.post(`/api/tasks`, task);
+    }
+    if (cud === 'update') {
+      return httpApi.put(`/api/tasks/${task.id}`, task);
+    }
+
+    if (cud === 'delete') {
+      return httpApi.delete(`/api/tasks/${task.id}`);
+    }
+
+    throw new Error(
+      `CUD should be either create or update or delete. Received ${cud}`
+    );
+  };
+
+  _getUpdatedTasks = (tasks, dirtyTask, cud) => {
+    if (cud === 'update' || cud === 'delete') {
+      return tasks.map(t => {
+        return t.id !== dirtyTask.id ? t : dirtyTask;
+      });
+    }
+
+    if (cud === 'create') {
+      return [...tasks, dirtyTask];
+    }
+
+    throw new Error(
+      `CUD should be either create or update or delete. Received ${cud}`
+    );
+  };
 }
 
 export default TasksPage;

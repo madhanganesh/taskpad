@@ -8,3 +8,9 @@ CREATE TABLE tasks (
 	tags VARCHAR(200) NOT NULL default(''),
 	notes VARCHAR(500) NOT NULL default('')
 );
+
+CREATE TABLE usertags (
+    userid VARCHAR(50) NOT NULL,
+    tag VARCHAR(25) NOT NULL,
+    CONSTRAINT usertags_pkey PRIMARY KEY (userid, tag) 
+)

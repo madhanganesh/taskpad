@@ -28,6 +28,8 @@ app.get('/api/tasks', (req, res) => {
   }
   setTimeout(() => {
     res.json({ tasks: resultTasks });
+    //res.status(400);
+    //res.send('some error');
   }, 2000);
 });
 
@@ -35,6 +37,12 @@ app.post('/api/tasks', (req, res) => {
   const task = req.body;
   const id = parseInt(_.uniqueId()) + 100;
   const taskWithId = { ...task, id: id, userid: 'dev-user-1' };
+  if (!task.title || task.title.indexOf('error') !== -1) {
+    res.status(400);
+    res.send('some error');
+    return
+  }
+
   tasks.push(taskWithId);
   setTimeout(() => {
     res.json(201, { task: taskWithId });
@@ -43,19 +51,51 @@ app.post('/api/tasks', (req, res) => {
 
 app.put('/api/tasks/:id', (req, res) => {
   const task = req.body;
+  if (1) {
+    res.status(401);
+    res.send('some error');
+    return
+
+  }
+    if (!task.title || task.title.indexOf('error') !== -1) {
+    res.status(400);
+    res.send('some error');
+    return
+  }
+
   const index = tasks.findIndex(t => t.id === task.id);
   tasks[index] = task;
   setTimeout(() => {
     res.json({ task });
-  }, 5000);
+  }, 2000);
 });
 
 app.delete('/api/tasks/:id', (req, res) => {
-  console.log(`id isssssss ${req.params.id}`);
   tasks = tasks.filter(t => t.id !== parseInt(req.params.id));
   setTimeout(() => {
+    //res.status(400);
+    //res.send('some error');
     res.json({ message: 'deleted' });
   }, 5000);
+});
+
+app.get('/api/usertags', (req, res) => {
+  setTimeout(() => {
+    res.json({
+      tags: [
+        'architecture',
+        'coding',
+        'meeting',
+        'coordination',
+        'analysis',
+        'gif',
+        'ui',
+        'documentation'
+      ]
+    });
+    //res.status(400);
+    //res.send('some error');
+  }, 2000);
 });
 
 app.listen(4000, () => {

@@ -1,19 +1,14 @@
 import auth0 from 'auth0-js';
 
-let AUTH0_DOMAIN = process.env.REACT_APP_AUTH0_DOMAIN;
-let AUTH0_CLIENT_ID = process.env.REACT_APP_AUTH0_CLIENT_ID;
-let AUTH0_AUDIENCE = process.env.REACT_APP_AUTH0_AUDIENCE;
-let AUTH0_CALLBACK = process.env.REACT_APP_AUTH0_CALLBACK_URL;
-if (process.env.NODE_ENV !== 'development') {
-  AUTH0_DOMAIN = window.AUTH0_DOMAIN;
-  AUTH0_CLIENT_ID = window.AUTH0_CLIENT_ID;
-  AUTH0_AUDIENCE = window.AUTH0_AUDIENCE;
-  AUTH0_CALLBACK = window.AUTH0_CALLBACK;
-}
+import {
+  AUTH0_DOMAIN,
+  AUTH0_CLIENT_ID,
+  AUTH0_AUDIENCE,
+  AUTH0_CALLBACK
+} from '../utils/auth-params';
 
 class Auth {
-  constructor(history) {
-    this.history = history;
+  constructor() {
     this.userProfile = null;
     this.auth0 = new auth0.WebAuth({
       domain: AUTH0_DOMAIN,
@@ -29,15 +24,15 @@ class Auth {
     this.auth0.authorize();
   };
 
-  handleAuthentication = () => {
+  handleAuthentication = done => {
     this.auth0.parseHash((err, authResult) => {
+      if (err) return done(err);
+
       if (authResult && authResult.accessToken && authResult.idToken) {
         this.setSession(authResult);
-        this.history.push('/tasks');
-      } else if (err) {
-        this.history.push('/');
-        alert(`Error: ${err.error}. Check the console for further details.`);
-        console.error(err);
+        done();
+      } else {
+        done({ err: 'error during authentication. check console' });
       }
     });
   };

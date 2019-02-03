@@ -1,26 +1,40 @@
 import React, { Component } from 'react';
 import { Route, Redirect } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-import Home from './Home';
-import Nav from './Nav';
+import Home from './home/Home';
+import Nav from './header/Nav';
 import Auth from './auth/Auth';
 import TasksPage from './tasks/TasksPage';
+
+import httpApi from './utils/http-api';
 
 class App extends Component {
   constructor(props) {
     super(props);
-    this.auth = new Auth(this.props.history);
+    this.auth = new Auth();
+    httpApi.init(this.auth);
   }
 
   componentDidMount() {
     if (window.location.hash.indexOf('access_token') !== -1) {
-      this.auth.handleAuthentication();
+      this.auth.handleAuthentication(err => {
+        if (err) {
+          this.history.push('/');
+          alert(`Error: ${err.error}. Check the console for further details.`);
+          console.error(err);
+          return;
+        }
+        this.props.history.push('/tasks');
+      });
     }
   }
 
   render() {
     return (
       <div className="container">
+        <ToastContainer />
         <Nav auth={this.auth} />
         <div className="body">
           <Route

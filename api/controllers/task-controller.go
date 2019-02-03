@@ -8,24 +8,25 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/madhanganesh/taskpad/api/models"
-
 	"github.com/gin-gonic/gin"
 
+	"github.com/madhanganesh/taskpad/api/models"
 	"github.com/madhanganesh/taskpad/api/repositories"
 )
 
-//var userid = "usr1"
-
 // TaskController struct
 type TaskController struct {
-	taskRepository *repositories.TaskRepository
+	taskRepository     *repositories.TaskRepository
+	userTagsRepository *repositories.UserTagRepository
 }
 
 // Init method
 func (c *TaskController) Init(db *sql.DB) {
 	c.taskRepository = &repositories.TaskRepository{}
 	c.taskRepository.Init(db)
+
+	c.userTagsRepository = &repositories.UserTagRepository{}
+	c.userTagsRepository.Init(db)
 }
 
 // CreateTask method
@@ -38,14 +39,15 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		})
 		return
 	}
-	userid, exists := ctx.Get("userid")
+	useridi, exists := ctx.Get("userid")
 	if !exists {
 		ctx.JSON(400, gin.H{
 			"error": "userid not found in request context",
 		})
 		return
 	}
-	task.UserID = userid.(string)
+	userid := useridi.(string)
+	task.UserID = userid
 	if task.Tags == nil {
 		task.Tags = []string{}
 	}
@@ -61,6 +63,9 @@ func (c *TaskController) CreateTask(ctx *gin.Context) {
 		})
 		return
 	}
+
+	// Set the user tags
+	c.userTagsRepository.SetUserTags(userid, task.Tags)
 
 	ctx.JSON(201, gin.H{
 		"task": createdTask,

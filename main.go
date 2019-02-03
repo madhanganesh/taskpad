@@ -24,6 +24,8 @@ func main() {
 
 	taskController := controllers.TaskController{}
 	taskController.Init(db)
+	userTagsController := controllers.UserTagsController{}
+	userTagsController.Init(db)
 
 	router.Use(func(ctx *gin.Context) {
 		if !util.Contains([]string{"POST", "PUT", "PATCH"}, ctx.Request.Method) {
@@ -71,6 +73,8 @@ func main() {
 	router.GET("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.GetTaskByID)
 	router.PUT("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.UpdateTaskForID)
 	router.DELETE("/api/tasks/:id", middlewares.AuthMiddleware(), taskController.DeleteTaskForID)
+
+	router.GET("/api/usertags", middlewares.AuthMiddleware(), userTagsController.GetUserTags)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index.html", dataToUIPage)

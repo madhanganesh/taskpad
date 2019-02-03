@@ -20,7 +20,10 @@ class Nav extends Component {
     if (this.state.username !== '') return;
 
     if (this.props.auth.isAuthenticated()) {
-      this.props.auth.getProfile(profile => {
+      this.props.auth.getProfile((profile, err) => {
+        if (err) {
+          return console.error(`error while retrieveing user profile: ${err}`);
+        }
         this.setState({
           username: profile.given_name || profile.nickname || profile.email
         });

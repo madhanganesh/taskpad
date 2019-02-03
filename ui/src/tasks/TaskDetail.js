@@ -14,25 +14,21 @@ class TaskDetail extends Component {
         ...task,
         due: moment(task.due).toDate()
       },
-      tags: [],
-      alltags: [
-        { value: 'architecture', label: 'architecture' },
-        { value: 'design', label: 'design' },
-        { value: 'coding', label: 'coding' },
-        { value: 'meeting', label: 'meeting' },
-        { value: 'coordination', label: 'coordination' }
-      ]
+      tags: []
     };
   }
 
   onSaveTask = event => {
     event.preventDefault();
-    this.props.onSaveTask(this.state.task);
+    this.props.onSaveTask(
+      this.state.task,
+      this.state.task.id === undefined ? 'create' : 'update'
+    );
   };
 
   onDeleteTask = event => {
     event.preventDefault();
-    this.props.onDeleteTask(this.state.task);
+    this.props.onSaveTask(this.state.task, 'delete');
   };
 
   onCancelEditTask = event => {
@@ -73,8 +69,8 @@ class TaskDetail extends Component {
 
   render() {
     const { id, title, due, effort, tags, notes } = this.state.task;
-
     const tagsSelectDefaultValues = tags.map(t => ({ value: t, label: t }));
+    const alltags = this.props.usertags.map(t => ({ value: t, label: t }));
 
     const customStyles = {
       control: styles => {
@@ -173,12 +169,12 @@ class TaskDetail extends Component {
           <div>
             <label htmlFor="tags">Tags</label>
             <CreatableSelect
-              placeholder="enter tags for your task"
+              placeholder="enter each tag and press enter"
               styles={customStyles}
               defaultValue={tagsSelectDefaultValues}
               isMulti
               onChange={this.onTagChange}
-              options={this.state.alltags}
+              options={alltags}
             />
           </div>
           <p>

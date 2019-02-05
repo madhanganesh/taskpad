@@ -22,7 +22,7 @@ const makeTestTasks = (start = 0, end = 1) => {
   return tasks;
 };
 
-let tasks = makeTestTasks(-7, 7);
-//let tasks = makeTestTasks(0, 1);
+//let tasks = makeTestTasks(-7, 7);
+let tasks = makeTestTasks(0, 1);
 
 module.exports = tasks;

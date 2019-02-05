@@ -69,4 +69,17 @@ function getWeekStartAndEnd(weekDeltaFromThisWeek) {
   return { from, to };
 }
 
-export { getQueryParamsForFilter, getDayStartAndEnd, getWeekStartAndEnd };
+function getNextWorkingDay(date) {
+  const d0 = moment(date);
+  let daysToAdd = 1;
+  if (d0.day() === 5) daysToAdd = 3;
+  if (d0.day() === 6) daysToAdd = 2;
+  return moment(d0).add(daysToAdd, 'day');
+}
+
+export {
+  getQueryParamsForFilter,
+  getDayStartAndEnd,
+  getWeekStartAndEnd,
+  getNextWorkingDay
+};

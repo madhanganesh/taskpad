@@ -186,6 +186,9 @@ func (c *TaskController) UpdateTaskForID(ctx *gin.Context) {
 		return
 	}
 
+	// Set the user tags
+	c.userTagsRepository.SetUserTags(userid, existingTask.Tags)
+
 	ctx.JSON(200, gin.H{
 		"message": fmt.Sprintf("%d updated", id),
 	})

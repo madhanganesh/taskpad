@@ -50,7 +50,7 @@ class TaskDetail extends Component {
 
   onEffortChange = event => {
     this.setState({
-      task: { ...this.state.task, effort: event.target.effort }
+      task: { ...this.state.task, effort: parseFloat(event.target.value) }
     });
   };
 

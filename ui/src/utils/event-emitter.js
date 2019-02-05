@@ -1,4 +1,4 @@
-class EventEmitter extends EventEmitter {
+class EventEmitter {
   subscribers = {};
 
   subscribe(event, subscriber) {

@@ -3,9 +3,10 @@ import moment from 'moment';
 
 import TaskList from './TaskList';
 import TaskDetail from './TaskDetail';
-import { getQueryParamsForFilter } from '../utils/utils';
+import TaskMetrics from './TaskMetrics';
 import httpApi from '../utils/http-api';
 import notifier from '../utils/notifier';
+import { getQueryParamsForFilter, getWeekStartAndEnd } from '../utils/utils';
 
 class TasksPage extends Component {
   state = {
@@ -13,7 +14,10 @@ class TasksPage extends Component {
     usertags: [],
     editTask: null,
     filter: 'pending',
-    loading: false
+    loading: false,
+    metrics: [],
+    metricsLoading: false,
+    metricsWeekNr: 0
   };
 
   async componentDidMount() {
@@ -28,15 +32,34 @@ class TasksPage extends Component {
     }
 
     const filter = getQueryParamsForFilter(this.state.filter);
-    const url = `/api/tasks?${filter}`;
-    const data = await httpApi.getWithErrorHandled(url);
-    this.setState({
-      loading: false
+    httpApi.getWithErrorHandled(`/api/tasks?${filter}`).then(data => {
+      this.setState({
+        loading: false
+      });
+
+      if (data) {
+        this.setState({
+          tasks: data.tasks.map(t => ({ ...t, dirty: false, error: undefined }))
+        });
+      }
     });
 
+    this.loadMetrics(this.state.metricsWeekNr);
+  };
+
+  loadMetrics = async (delta, showLoader = true) => {
+    if (showLoader) {
+      this.setState({ metricsLoading: true });
+    }
+    const { from, to } = getWeekStartAndEnd(delta);
+    const data = await httpApi.getWithErrorHandled(
+      `/api/taskmetrics/daily?from=${from}&to=${to}`
+    );
+    this.setState({ metricsLoading: false });
     if (data) {
       this.setState({
-        tasks: data.tasks.map(t => ({ ...t, dirty: false, error: undefined }))
+        metricsWeekNr: delta,
+        metrics: data.metrics
       });
     }
   };
@@ -105,10 +128,25 @@ class TasksPage extends Component {
     });
   };
 
+  onMetricsPrev = () => {
+    this.loadMetrics(this.state.metricsWeekNr - 1);
+  };
+
+  onMetricsNext = () => {
+    this.loadMetrics(this.state.metricsWeekNr + 1);
+  };
+
   renderMetrics() {
+    const { metricsLoading, metrics } = this.state;
+
     return (
       <div className="column-sidebar tile">
-        <h3>Task Metrics to come here....</h3>
+        <TaskMetrics
+          loading={metricsLoading}
+          metrics={metrics}
+          onMetricsPrev={this.onMetricsPrev}
+          onMetricsNext={this.onMetricsNext}
+        />
       </div>
     );
   }

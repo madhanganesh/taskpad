@@ -99,7 +99,9 @@ func (c *TaskController) GetTasks(ctx *gin.Context) {
 		log.Printf("invoking GetTasksByDateRange for user=%s with from=%s, to=%s\n", userid, from, to)
 		tasks, err = c.taskRepository.GetTasksByDateRange(userid, from, to)
 	} else {
-		err = errors.New("Invalid query parameters. Either peding or from/to should be provided")
+		errorMessage := "Invalid query parameters. Either pending or from/to should be provided"
+		log.Println(errorMessage)
+		err = errors.New(errorMessage)
 	}
 
 	if err != nil {

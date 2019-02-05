@@ -1,14 +1,10 @@
 const _ = require('lodash');
 const express = require('express');
 const bodyParser = require('body-parser');
-
-//const Moment = require('moment');
-//const MomentRange = require('moment-range');
-//const moment = MomentRange.extendMoment(Moment);
-
 const moment = require('moment');
 
 let tasks = require('./tasks');
+const { getWeekStartAndEnd } = require('./utils');
 
 const app = express();
 app.use(bodyParser.json());
@@ -40,7 +36,7 @@ app.post('/api/tasks', (req, res) => {
   if (!task.title || task.title.indexOf('error') !== -1) {
     res.status(400);
     res.send('some error');
-    return
+    return;
   }
 
   tasks.push(taskWithId);
@@ -51,16 +47,10 @@ app.post('/api/tasks', (req, res) => {
 
 app.put('/api/tasks/:id', (req, res) => {
   const task = req.body;
-  if (1) {
-    res.status(401);
-    res.send('some error');
-    return
-
-  }
-    if (!task.title || task.title.indexOf('error') !== -1) {
+  if (!task.title || task.title.indexOf('error') !== -1) {
     res.status(400);
     res.send('some error');
-    return
+    return;
   }
 
   const index = tasks.findIndex(t => t.id === task.id);
@@ -95,6 +85,27 @@ app.get('/api/usertags', (req, res) => {
     });
     //res.status(400);
     //res.send('some error');
+  }, 2000);
+});
+
+app.get('/api/taskmetrics/daily', (req, res) => {
+  const { from, to } = req.query;
+  const fromD = moment(from);
+  const toD = moment(to);
+
+  const current = moment(fromD);
+  let metrics = [];
+  while (current.isSameOrBefore(toD, 'day')) {
+    metrics.push({
+      day: current.utc().toISOString(),
+      effort: Math.floor(Math.random() * 10)
+    });
+    current.add(1, 'day');
+  }
+  setTimeout(() => {
+    res.json({
+      metrics: metrics
+    });
   }, 2000);
 });
 

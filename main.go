@@ -28,6 +28,8 @@ func main() {
 	userTagsController.Init(db)
 	taskMetricsController := controllers.TaskMetricsController{}
 	taskMetricsController.Init(db)
+	reportController := controllers.ReportController{}
+	reportController.Init(db)
 
 	router.Use(func(ctx *gin.Context) {
 		if !util.Contains([]string{"POST", "PUT", "PATCH"}, ctx.Request.Method) {
@@ -78,6 +80,10 @@ func main() {
 
 	router.GET("/api/usertags", middlewares.AuthMiddleware(), userTagsController.GetUserTags)
 	router.GET("/api/taskmetrics/daily", middlewares.AuthMiddleware(), taskMetricsController.GetTaskMetrics)
+
+	router.GET("/api/reports", middlewares.AuthMiddleware(), reportController.GetReports)
+	router.POST("/api/reports", middlewares.AuthMiddleware(), reportController.CreateReport)
+	router.GET("/api/chartdata/:id", middlewares.AuthMiddleware(), reportController.GetChartData)
 
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(http.StatusOK, "index.html", dataToUIPage)

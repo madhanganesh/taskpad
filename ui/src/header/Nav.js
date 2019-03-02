@@ -45,7 +45,7 @@ class Nav extends Component {
               <a href="/">Tasks</a>
             </li>
             <li>
-              <a href="/pricing">Reports</a>
+              <a href="/reports">Reports</a>
             </li>
             <li className="nav-date">{moment().format('DD MMM YYYY')}</li>
             <li className="nav-username">{this.state.username}</li>

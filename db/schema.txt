@@ -14,3 +14,11 @@ CREATE TABLE usertags (
     tag VARCHAR(25) NOT NULL,
     CONSTRAINT usertags_pkey PRIMARY KEY (userid, tag) 
 )
+
+CREATE TABLE reports (
+	id SERIAL PRIMARY KEY,
+	userid VARCHAR(50) NOT NULL,
+	title VARCHAR(200) NOT NULL,
+	type VARCHAR(50) NOT NULL,
+	spec jsonb NOT NULL
+)

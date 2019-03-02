@@ -51,5 +51,5 @@
     "express": "^4.16.4",
     "rimraf": "^2.6.3"
   },
-  "proxy": "http://localhost:4000"
+  "proxy": "http://localhost:8080"
 }

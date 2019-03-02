@@ -10,6 +10,10 @@ class Logger {
   error(err) {
     console.error(err);
   }
+
+  warning(msg) {
+    console.warn(msg);
+  }
 }
 
 // singleton

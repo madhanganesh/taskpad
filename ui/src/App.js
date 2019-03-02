@@ -7,6 +7,7 @@ import Home from './home/Home';
 import Nav from './header/Nav';
 import Auth from './auth/Auth';
 import TasksPage from './tasks/TasksPage';
+import ReportsPage from './reports/ReportsPage';
 
 import httpApi from './utils/http-api';
 
@@ -47,6 +48,16 @@ class App extends Component {
             render={props =>
               this.auth.isAuthenticated() ? (
                 <TasksPage auth={this.auth} {...props} />
+              ) : (
+                <Redirect to="/" />
+              )
+            }
+          />
+          <Route
+            path="/reports"
+            render={props =>
+              this.auth.isAuthenticated() ? (
+                <ReportsPage auth={this.auth} {...props} />
               ) : (
                 <Redirect to="/" />
               )

@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import PieGroupRule from './PieGroupRule';
 import logger from '../../utils/logger';
 
-class PieGroupDetails extends Component {
+class PieGroupEditView extends Component {
   state = {
     name: '',
     rules: []
@@ -15,7 +15,7 @@ class PieGroupDetails extends Component {
 
   onNameChange = event => {
     this.setState({
-      name: event.target.value.replace(/\s/g, '')
+      name: event.target.value.replace(/[\W_]+/g, '')
     });
   };
 
@@ -30,13 +30,6 @@ class PieGroupDetails extends Component {
   };
 
   getRuleStr = () => {
-    /*const rules = this.state.rules.map(r => r.rule);
-    const rulesStr = rules.join(' ');
-    return `(${rulesStr})`;
-
-    /*let rule = `(${tags.join(' and ')})`;
-    rule = this.props.firstRule ? rule : `${this.state.filter} ${rule}`;*/
-
     const rules = this.state.rules.map(r => r.rule);
     const rulesStrArr = rules.map(r => {
       let str = `(${r.tags.join(' and ')})`;
@@ -73,6 +66,8 @@ class PieGroupDetails extends Component {
 
   onPieGroupSave = event => {
     event.preventDefault();
+
+    const { rules } = this.state;
     const ruleStr = this.getRuleStr();
 
     const tagSet = new Set();
@@ -81,29 +76,28 @@ class PieGroupDetails extends Component {
         tagSet.add(t);
       });
     });
-    const uniqueTags = [];
+
+    const groupTags = [];
     for (let tag of tagSet.values()) {
-      uniqueTags.push(tag);
+      groupTags.push(tag);
     }
 
-    this.props.onPieGroupSave(this.state.name, ruleStr, uniqueTags);
+    this.props.onPieGroupSave(this.state.name, ruleStr, rules, groupTags);
   };
 
   onCancel = event => {
     event.preventDefault();
-    this.props.onCancelPiegroupDetail();
+    this.props.onCancelPieGroupDetail();
   };
 
   canSave = () => {
     const { name, rules } = this.state;
-
     return name !== '' && name !== ' ' && rules[0].rule.tags.length > 0;
   };
 
   renderRules() {
     return this.state.rules.map(rule => {
       const id = rule.id;
-
       const firstRule = id === 0;
 
       return (
@@ -119,36 +113,42 @@ class PieGroupDetails extends Component {
     });
   }
 
+  onRulesOk = () => {
+    alert('ok');
+  };
+
   render() {
     return (
-      <form className="pie-group-detail">
-        <h4>Pie Group</h4>
+      <div className="pie-group-detail">
         <p>
           <label htmlFor="title">Name</label>
           <input
             id="title"
             type="text"
-            name="pie group name"
+            name="pie group name "
             value={this.state.name}
             onChange={this.onNameChange}
             autoFocus
-            placeholder="name of pie group"
+            placeholder="name of pie group - ONLY alpha numeric"
           />
         </p>
+
         <div>
           <label htmlFor="title">Selection Rules</label>
           {this.renderRules()}
         </div>
+
         <div id="rule">{this.getRuleStr()}</div>
+
         <div className="pie-group-detail__controls">
           <button onClick={this.onPieGroupSave} disabled={!this.canSave()}>
-            Save
+            Save Pie Group Details
           </button>
           <button onClick={this.onCancel}>Cancel</button>
         </div>
-      </form>
+      </div>
     );
   }
 }
 
-export default PieGroupDetails;
+export default PieGroupEditView;

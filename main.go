@@ -83,6 +83,7 @@ func main() {
 
 	router.GET("/api/reports", middlewares.AuthMiddleware(), reportController.GetReports)
 	router.POST("/api/reports", middlewares.AuthMiddleware(), reportController.CreateReport)
+	router.DELETE("/api/reports/:id", middlewares.AuthMiddleware(), reportController.DeleteReport)
 	router.GET("/api/chartdata/:id", middlewares.AuthMiddleware(), reportController.GetChartData)
 
 	router.NoRoute(func(ctx *gin.Context) {

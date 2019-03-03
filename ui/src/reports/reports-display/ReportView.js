@@ -26,7 +26,10 @@ class ReportView extends Component {
   render() {
     return (
       <div className="report-view">
-        <ReportViewToolbar report={this.props.report} />
+        <ReportViewToolbar
+          report={this.props.report}
+          onDeleteReport={this.props.onDeleteReport}
+        />
         <div className="report-view__chart">{this.renderByReportType()}</div>
       </div>
     );

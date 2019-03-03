@@ -13,10 +13,6 @@ body {
   font-family: Raleway, Helvetica, Arial, sans-serif;
 }
 
-/*body * + * {
-  margin-top: 1.5em;
-}*/
-
 .container {
   max-width: 1080px;
   margin: 0 auto;
@@ -195,10 +191,6 @@ ul.tasks {
   color: gray;
 }
 
-/*body * + * {
-  margin-top: 1.5em;
-}*/
-
 .task > .task-right {
   margin-left: auto;
   padding: 0.2em 1.5em;
@@ -295,8 +287,6 @@ input[type='checkbox'] {
 .report-toolbar button {
   display: block;
   padding: 0.4em 1em;
-  /*background-color: #cc6b5a;
-  color: white;*/
   border: 1px solid #cc6b5a;
   background-color: white;
   text-decoration: none;
@@ -327,10 +317,16 @@ input[type='checkbox'] {
   border-bottom: 1px solid grey;
   padding: 0.5em;
   background-color: lightgray;
+  display: flex;
+  flex-direction: row;
 }
 
 .report-view__toolbar__title {
   font-weight: bold;
+}
+
+.report-view_toolbar__controls {
+  margin-left: auto;
 }
 
 .report-view__chart {
@@ -338,96 +334,92 @@ input[type='checkbox'] {
   margin-top: 1em;
 }
 
-.report-form {
-  margin: 0.5em;
-  margin-bottom: 2em;
-  border: 1px solid grey;
+.report-create-view {
+  margin: 2em 15em;
   padding: 0.5em;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  border: 1px solid grey;
+}
+
+.report-create-view__heading {
+  margin: 0;
+}
+
+.report-create-view__form * {
+  font-family: inherit;
+  font-size: 1em;
+}
+
+.report-create-view__form input,
+.report-create-view__form select {
+  display: block;
+  width: 100%;
+  margin-top: 0;
+}
+
+.report-create-view__form__controls {
+  margin-top: 2em;
+}
+
+.report-create-view__form__controls button + button {
+  margin-left: 1em;
+}
+
+.report-create-view__form__controls button {
+  margin-top: 1em;
+  border: 1px solid #cc6b5a;
+  background-color: white;
+  padding: 0.4em 1em;
+  cursor: pointer;
+  font-size: 0.75em;
+}
+
+.pie-chart-details__body {
   display: flex;
   flex-direction: row;
 }
 
-.report-form-main {
-  border-right: 1px solid grey;
-  width: 50%;
-  padding: 1em;
-  padding-top: 0;
-}
-
-.report-form-main * {
-  font-family: inherit;
-  font-size: 1em;
-}
-
-.report-form-main input,
-.report-form select {
-  display: block;
-  width: 100%;
-  margin-top: 0;
-}
-
-.report-form-main button {
-  margin-top: 1em;
-  border: 1px solid #cc6b5a;
-  background-color: white;
-  padding: 0.4em 1em;
-  cursor: pointer;
-  font-size: 0.75em;
-}
-
-.report-form-main button + button {
-  margin-left: 1em;
-}
-
-.report-form-main-controls {
-  margin-top: 2em;
-}
-
 .pie-chart-details__groups {
-  list-style: none;
   padding: 0.5em;
   border: 1px solid lightslategray;
-  display: flex;
-  flex-direction: column;
+  flex-grow: 2;
 }
 
 .pie-chart-details__group {
-  margin-top: 0.5em;
-  display: block;
+  padding: 0.5em;
+  margin: 0.5em;
+  border-bottom: 1px dotted lightslategray;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
 }
 
-.pie-chart-details__add {
-  max-width: 20%;
+.pie-chart-details__group__controls {
   margin-left: auto;
 }
 
-.pie-chart-details button {
-  margin-top: 1em;
-  border: 1px solid #cc6b5a;
-  background-color: white;
-  padding: 0.4em 1em;
-  cursor: pointer;
-  font-size: 0.75em;
+.pie-chart-details__controls {
+  margin-top: 0em;
+  margin-left: 0.5em;
 }
 
 .pie-group-detail {
-  margin: 1em;
-  margin-left: 1.5em;
+  padding: 1em;
+  padding-top: 0;
+  border: 1px dotted darkorange;
+}
+
+.pie-group-detail > #rule {
+  margin-top: 1em;
+  padding: 0.5em;
   border: 1px solid grey;
-  padding: 0.5em 0.5em;
-  width: 45%;
-}
-
-.pie-group-detail * {
-  font-family: inherit;
-  font-size: 1em;
-}
-
-.pie-group-detail input,
-.pie-group-detail select {
-  display: block;
-  width: 100%;
-  margin-top: 0;
+  background-color: lightgoldenrodyellow;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.8em;
+  word-wrap: break-word;
+  width: 93%;
 }
 
 .pie-group-detail__controls > button {
@@ -441,17 +433,6 @@ input[type='checkbox'] {
 
 .pie-group-detail__controls button + button {
   margin-left: 1em;
-}
-
-.pie-group-detail > #rule {
-  margin-top: 1em;
-  padding: 0.5em;
-  border: 1px solid grey;
-  background-color: lightgoldenrodyellow;
-  font-family: 'Courier New', Courier, monospace;
-  font-size: 0.8em;
-  word-wrap: break-word;
-  width: 93%;
 }
 
 .pie-group-rule {
@@ -476,49 +457,36 @@ input[type='checkbox'] {
   margin-left: 1em;
 }
 
-/*.report-form {
-  font-family: inherit;
-  font-size: 1em;
-  margin: 3em;
-  border: 1px solid grey;
-  background-color: white;
-  padding: 0.5em;
+.modal {
+  font-size: 12px;
 }
-
-.report-form button {
-  margin-top: 1em;
-  border: 1px solid #cc6b5a;
-  background-color: white;
-  padding: 0.4em 1em;
-  cursor: pointer;
-  font-size: 0.75em;
-}
-
-.report-form > button + button {
-  margin-left: 1em;
-}
-
-.report-form * {
-  font-family: inherit;
-  font-size: 1em;
-}
-
-.report-form h3 {
-  margin: 0;
-  font-size: 0.9em;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
-.report-form input,
-.report-form select1 {
-  display: block;
+.modal > .header {
   width: 100%;
-  margin-top: 0;
+  border-bottom: 1px solid gray;
+  font-size: 18px;
+  text-align: center;
+  padding: 5px;
 }
-
-.report-form .piegroup {
-  border: 1px solid lightslategrey;
-  background-color: white;
-  padding: 1em;
-}*/
+.modal > .content {
+  width: 100%;
+  padding: 10px 5px;
+}
+.modal > .actions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.modal > .close {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}

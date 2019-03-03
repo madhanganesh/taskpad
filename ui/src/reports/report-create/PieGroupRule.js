@@ -9,13 +9,28 @@ import httpApi from '../../utils/http-api';
 
 class PieGroupRule extends Component {
   state = {
-    filter: '',
+    logicalOperations: [],
+    selectedOperation: '',
     tags: [],
     usertags: []
   };
 
   async componentWillMount() {
     this.loadUserTags();
+  }
+
+  componentDidMount() {
+    const { firstRule } = this.props;
+    const options = firstRule ? ['', 'not'] : ['and not', 'or', 'and'];
+
+    let selectedOperation = options[0];
+    let tags = [];
+
+    this.setState({
+      logicalOperations: options,
+      selectedOperation: selectedOperation,
+      tags: tags
+    });
   }
 
   loadUserTags = async () => {
@@ -32,7 +47,7 @@ class PieGroupRule extends Component {
   onTagChange = selectedTags => {
     const tags = selectedTags.map(k => k.value);
     const rule = {
-      operator: this.state.filter,
+      operator: this.state.selectedOperation,
       tags: tags
     };
     this.state.tags = tags; //eslint-disable-line
@@ -43,11 +58,11 @@ class PieGroupRule extends Component {
     const filter = event.target.value;
     this.setState(
       {
-        filter: filter
+        selectedOperation: filter
       },
       () => {
         const rule = {
-          operator: this.state.filter,
+          operator: this.state.selectedOperation,
           tags: this.state.tags
         };
         this.props.onRuleChanged(this.props.id, rule);
@@ -56,18 +71,19 @@ class PieGroupRule extends Component {
   };
 
   renderLogicOperation() {
-    const { filter } = this.state;
-    const { firstRule } = this.props;
-
-    const options = firstRule ? ['', 'not'] : ['and not', 'or', 'and'];
+    const { logicalOperations, selectedOperation } = this.state;
 
     function renderOptions() {
-      return options.map(o => <option value={o}>{o}</option>);
+      return logicalOperations.map(o => (
+        <option key={o} value={o}>
+          {o}
+        </option>
+      ));
     }
 
     return (
       <span id="logic">
-        <select onChange={this.onLogicChange} value={filter}>
+        <select onChange={this.onLogicChange} value={selectedOperation}>
           {renderOptions()}
         </select>
       </span>
@@ -131,8 +147,7 @@ class PieGroupRule extends Component {
       }
     };
 
-    const tags = [];
-    const { usertags } = this.state;
+    const { tags, usertags } = this.state;
 
     const tagsSelectDefaultValues = tags.map(t => ({ value: t, label: t }));
     const alltags = usertags.map(t => ({ value: t, label: t }));

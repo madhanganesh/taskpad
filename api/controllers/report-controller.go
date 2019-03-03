@@ -108,6 +108,39 @@ func (r *ReportController) CreateReport(ctx *gin.Context) {
 	})
 }
 
+// DeleteReport method
+func (r *ReportController) DeleteReport(ctx *gin.Context) {
+	idstr := ctx.Param("id")
+	id, err := strconv.ParseInt(idstr, 10, 64)
+	if err != nil {
+		log.Printf("Error in retrieving ID from request %+v\n", err)
+		ctx.JSON(400, gin.H{
+			"message": fmt.Sprintf("%s is not a valid number", idstr),
+		})
+		return
+	}
+
+	useridi, exists := ctx.Get("userid")
+	if !exists {
+		ctx.JSON(400, gin.H{
+			"error": "userid not found in request context",
+		})
+		return
+	}
+	userid := useridi.(string)
+
+	err = r.reportRepository.DeleteReport(userid, id)
+	if err != nil {
+		log.Printf("Error in deleteing report from repository: %+v\n", err)
+		ctx.JSON(400, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	ctx.JSON(202, id)
+}
+
 // GetChartData method
 func (r *ReportController) GetChartData(ctx *gin.Context) {
 	idstr := ctx.Param("id")

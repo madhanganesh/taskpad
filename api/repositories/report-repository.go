@@ -72,6 +72,27 @@ func (r *ReportRepository) CreateReport(report models.Report) (models.Report, er
 	return createdReport, nil
 }
 
+// DeleteReport method
+func (r *ReportRepository) DeleteReport(userid string, reportid int64) error {
+	statement := `delete from reports where userid=$1 and id=$2`
+	res, err := r.db.Exec(statement, userid, reportid)
+	if err != nil {
+		log.Printf("report-repository : delete report : error in Exec: %+v\n", err)
+		return err
+	}
+
+	count, err := res.RowsAffected()
+	if err != nil {
+		log.Printf("report-repository : delete report : error in RowsAffected: %+v\n", err)
+		return err
+	}
+	if count != 1 {
+		return fmt.Errorf("exactly 1 row is not impacted for %d", reportid)
+	}
+
+	return nil
+}
+
 // GetChartData method
 func (r *ReportRepository) GetChartData(userid string, reportid int64) (models.ReportData, error) {
 	query := `

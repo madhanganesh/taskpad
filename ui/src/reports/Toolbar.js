@@ -9,7 +9,7 @@ class Toolbar extends Component {
     const { count } = this.props;
     if (count === 0) return 'No Reports (yet)';
     if (count === 1) return '1 report';
-    return `${count} tasks`;
+    return `${count} reports`;
   }
 
   render() {

@@ -1,15 +1,16 @@
 import React, { Component } from 'react';
 
 import Toolbar from './Toolbar';
-import ReportForm from './ReportForm';
-import ReportsView from './reporstview/ReportsView';
+import ReportCreateView from './report-create/ReportCreateView';
+import ReportsView from './reports-display/ReportsView';
 
 import httpApi from '../utils/http-api';
 import notifier from '../utils/notifier';
+import logger from '../utils/logger';
 
 class ReportsPage extends Component {
   state = {
-    showReportsForm: false,
+    showReportCreate: false,
     loading: false,
     reports: []
   };
@@ -25,20 +26,15 @@ class ReportsPage extends Component {
 
     httpApi.getWithErrorHandled(`/api/reports`).then(reports => {
       this.setState({
+        reports: reports,
         loading: false
       });
-
-      if (reports) {
-        this.setState({
-          reports: reports
-        });
-      }
     });
   };
 
   onAddReport = () => {
     this.setState({
-      showReportsForm: true
+      showReportCreate: true
     });
   };
 
@@ -48,15 +44,13 @@ class ReportsPage extends Component {
 
   onSaveReport = async report => {
     this.setState({
-      showReportsForm: false,
+      showReportCreate: false,
       loading: true
     });
 
-    try {
-      await httpApi.post('/api/reports', report);
-    } catch (e) {}
+    logger.log('Craeting report ' + JSON.stringify(report));
 
-    const err = await httpApi.post('/api/report', report);
+    const err = await httpApi.post('/api/reports', report);
     if (err) {
       notifier.showError(
         `Error in saving the report. Pleas check and create again`
@@ -68,8 +62,16 @@ class ReportsPage extends Component {
 
   onCancelEditReport = () => {
     this.setState({
-      showReportsForm: false
+      showReportCreate: false
     });
+  };
+
+  onDeleteReport = async id => {
+    const err = await httpApi.delete(`/api/reports/${id}`);
+    if (err) {
+      notifier.showError('Error in deleting the report. Pleas try again');
+    }
+    this.loadReports();
   };
 
   render() {
@@ -82,15 +84,18 @@ class ReportsPage extends Component {
           loading={this.state.loading}
         />
 
-        {this.state.showReportsForm ? (
-          <ReportForm
+        {this.state.showReportCreate ? (
+          <ReportCreateView
             onSaveReport={this.onSaveReport}
             onCancelEditReport={this.onCancelEditReport}
           />
         ) : null}
 
         {this.state.loading ? null : (
-          <ReportsView reports={this.state.reports} />
+          <ReportsView
+            reports={this.state.reports}
+            onDeleteReport={this.onDeleteReport}
+          />
         )}
       </div>
     );

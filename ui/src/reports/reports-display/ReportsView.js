@@ -5,7 +5,13 @@ import ReportView from './ReportView';
 class ReportsView extends Component {
   renderReports() {
     return this.props.reports.map(report => {
-      return <ReportView report={report} />;
+      return (
+        <ReportView
+          key={report.id}
+          report={report}
+          onDeleteReport={this.props.onDeleteReport}
+        />
+      );
     });
   }
 

@@ -35,3 +35,18 @@ This task is hosted @ https://taskpad.site
 ## Architecture
 
 This is a SPA with a Go BE. The API uses Postgres to store tasks and other entities.
+
+## Steps to run
+
+1. Clone the repo
+2. Run the server - npm start
+3. Run the client
+   a. cd ui
+   b. npm start
+
+Please see the command in npm start of server.
+
+- It requires https://github.com/codegangsta/gin [gin] to installed
+- It requires fe environment variables:
+  - Postgres DB details
+  - Auth0 client ID

@@ -9,7 +9,7 @@ meaning out of the effort that you are spending on various activities. As the sa
 
 ## Hosted
 
-This task is hosted @ https://taskpad.site
+This task is hosted @ https://taskpad.co.in
 
 ## Tech Stack
 
